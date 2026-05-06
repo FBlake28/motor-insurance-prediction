@@ -1,71 +1,86 @@
-# BIA 652 - Multivariate Data Analysis
-This project began as a final project requirement for a course at Stevens Institute of Technology and was extended beyond course requirements.
+# Motor Vehicle Insurance — Premium & Claims Prediction
+**BIA 652 · Multivariate Data Analysis · Stevens Institute of Technology**
+
+This project began as a final project requirement and was extended beyond course requirements.
 
 ---
 
 ## Research Question
+
 > *What vehicle and driver characteristics are the strongest predictors of motor insurance premium and claim occurrence — and how does a traditional statistical model, an ensemble ML model, and an LLM compare in their ability to make that prediction?*
 
-In the age of GenAI, there tends to be a consistent "overhype" among AI enthusiasts in the ability of GenAI to perform as well as traditional ML models with little-to-no situational fine-tuning. While LLMs are powerful, they are limited by their token count and require external tools-- like traditional ML models-- to reach their full "predictive" potential. This project seeks to quantify the gap in model success, determine model specialties, and exemplify a successful GenAI system using function calling. This project also seeks to create a functional system to estimate insurance premium cost and claim likelihood based on the provided training data.
+In the age of GenAI, there tends to be a consistent overhype among AI enthusiasts in the ability of GenAI to perform as well as traditional ML models with little-to-no situational fine-tuning. While LLMs are powerful, they are limited by their token count and require external tools — like traditional ML models — to reach their full predictive potential. This project seeks to quantify the gap in model success, determine model specialties, and exemplify a successful GenAI system using function calling.
 
 ---
 
 ## Dataset
-**Spanish Motor Vehicle Insurance Portfolio (2015–2018)**
-105,555 rows × 30 columns — semicolon-delimited, Excel-wrapped.
-Source: [Mendeley Data](https://data.mendeley.com/datasets/5cxyb5fp4f/2)
 
-Note that this dataset originates from Spain, meaning that our attributes will be European standard. This include date-time formatting, currency type, distance and size measurements, etc.
+**Spanish Motor Vehicle Insurance Portfolio (2015–2018)**
+105,555 rows × 30 columns — semicolon-delimited, sourced from [Mendeley Data](https://data.mendeley.com/datasets/5cxyb5fp4f/2).
+
+> **Note:** This dataset originates from Spain. All attributes follow European standards — date formatting, currency (€), engine power (kW), vehicle dimensions (mm/kg), etc.
 
 ---
 
-## Workflow Overview
+## Workflow
 
 | Phase | Description |
 |---|---|
 | **1. EDA & Preprocessing** | Exploratory analysis, feature engineering, reusable preprocessing pipeline |
-| **2. Dimensionality Reduction & Segmentation** | PCA on vehicle specs → K-Means clustering with human-readable risk tier labels |
+| **2. Dimensionality Reduction & Segmentation** | PCA on vehicle specs → K-Means clustering → human-readable risk tier labels |
 | **3. Predictive Modeling** | Three parallel models predicting Premium and claim occurrence |
-| &nbsp;&nbsp;&nbsp;h1 — Multiple Linear Regression | Traditional statistical model |
-| &nbsp;&nbsp;&nbsp;h2 — Random Forest | Ensemble ML baseline |
-| &nbsp;&nbsp;&nbsp;h3 — LLM + Prompt Engineering | Ollama with structured prompting |
-| **4. Model Comparison** | R², RMSE, ROC-AUC across all three approaches |
-| **5. Agent Demo** | Using wrapped tools via the LLM tool calling capabilities-- Input your own policy description to receive text-delivered trained model outputs! |
+| &nbsp;&nbsp;&nbsp;h1 — Random Forest | Ensemble ML model (best regression) |
+| &nbsp;&nbsp;&nbsp;h2 — Multiple Linear Regression | Traditional statistical model (best classification) |
+| &nbsp;&nbsp;&nbsp;h3 — LLM + Prompt Engineering | Ollama (llama3.2) with few-shot structured prompting |
+| **4. Model Comparison** | R², RMSE, and ROC-AUC across all three approaches |
+| **5. Agent Demo** | LLM tool-calling wrapper over h1 and h2 — input any policy description in plain English and receive a trained-model-backed underwriting memo |
 
 ---
 
-Regression Comparison — Premium Prediction (Log_premium target)
+## Results
 
-                                 R² (test, log)  RMSE (log)   RMSE (€)  Test n
-Model                                                                         
-Multiple Linear Regression (h2)          0.4869      0.3103   119.1657   20759
-Random Forest (h1)                       0.7175      0.2302    86.3081   20759
-LLM (llama3.2)                          -2.4581      0.7834  2746.9726     300
+### Premium Prediction (Regression)
+*Target: log-transformed annual premium in €. Mean test premium: €318.45.*
 
-Mean test premium for context: €318.45
+| Model | R² (test) | RMSE (log) | RMSE (€) | Test n |
+|---|---|---|---|---|
+| Random Forest (h1) | 0.718 | 0.230 | €86.31 | 20,759 |
+| Multiple Linear Regression (h2) | 0.487 | 0.310 | €119.17 | 20,759 |
+| LLM — llama3.2 (h3) | −2.458 | 0.783 | €2,746.97 | 300* |
+
+### Claim Occurrence (Classification)
+*Target: binary claim flag. Balanced classifiers used for MLR and RF. Primary metric: ROC-AUC.*
+*Accuracy de-emphasized — inflated by 4.4:1 class imbalance.*
+
+| Model | ROC-AUC | Recall (Claims) | Precision | F1-Score | Accuracy | Test n |
+|---|---|---|---|---|---|---|
+| Multiple Linear Regression (h2) | **0.919** | 0.793 | 0.584 | 0.673 | 0.855 | 20,759 |
+| Random Forest (h1) | 0.873 | 0.551 | 0.489 | 0.518 | 0.808 | 20,759 |
+| LLM — llama3.2 (h3) | 0.682 | N/A | N/A | N/A | 0.790 | 300* |
+
+*\*LLM evaluated on a stratified 300-row sample — full test set inference is infeasible at local throughput.*
 
 ---
 
-  CLASSIFICATION COMPARISON (MLR & RF: balanced models)
+## Takeaways
 
-                                  ROC-AUC Recall (Claims) Precision F1-Score  Accuracy  Test n Imbalance corrected
-Model                                                                                                             
-Multiple Linear Regression (h2)  0.919000          0.7931     0.584   0.6727    0.8550   20759                 Yes
-Random Forest (h1)               0.872900          0.5505     0.489   0.5179    0.8075   20759                 Yes
-LLM (llama3.2)                   0.682194             N/A       N/A      N/A    0.7900     300                 N/A
+**Random Forest (h1) wins regression** with R² = 0.718. RF captures nonlinear interactions that MLR cannot — notably, N_doors = 0 rows correspond to motorcycles, which carry a systematically lower premium that RF correctly adjusts for.
 
-  Primary metric: ROC-AUC | Secondary: Recall (insurance — missed claims costly)
-  Accuracy de-emphasized — inflated by 4.4:1 class imbalance
+**Multiple Linear Regression (h2) wins classification** with ROC-AUC = 0.919. The logistic regression decision boundary responds more cleanly to class weighting, producing superior claim-sorting ability despite RF's slight recall advantage.
 
- ---
+**The LLM consistently underperforms** both classical models on both tasks. Its "training data" consisted of six few-shot examples rather than the full 83,000-row training set, the base model (llama3.2) was not fine-tuned for actuarial prediction, and it exhibited a strong bias toward predicting no claim. This is not a failure of LLMs in general — it demonstrates that LLMs are not designed for direct prediction tasks. Their real value is as an orchestration layer: by giving an LLM access to trained ML tools via function calling, it can parse natural language inputs and return interpretable, model-backed outputs in plain English.
 
- ## Takeaways:
- In this project, we had two goals: predict insurance premium cost (regression), and predict whether a claim would occur within a year (classification).
+The Agent Demo (Notebook 6) implements exactly this pattern.
 
-Random Forest (h1) wins regression with the highest R-squared value of 0.728. RF is able to capture nonlinear interactions, such as with N_doors that allowed it to pick up on 0-door rows belonging to motorbikes and adjusting the predicted premium value accordingly.
+---
 
-Multiple Linear Regression (h2) wins classification with AUC = 0.915. While RF has slightly higher recall, the MLR is still able to more consistently classify whether a row will result in a claim.
+## Setup
 
-Meanwhile, the LLM approach consistently underperforms both classical models for both classification and regression tasks. There are numerous reasons for this occurring: "training data" for the LLM consisted of few-shot prompts rather than standard training, the LLM model may not have been advanced enough, and a heavy bias towards predicting a claim would result in "no claim." This isn't a failure of LLMs in general, but instead demonstrates the need for LLM's use as a connecting tool rather than a primary classification / regression methodology. By giving LLMs access to tools like RF and MLR via function calling capabilities, LLMs can instead be used to intake and explain results in "plain english" for easy understanding.
+**Requirements:** Python 3.10+, [Ollama](https://ollama.com) running locally with `llama3.2` pulled.
 
-A potential project extension could be doing the above and designing an application to assist with improving understanding of RF and MLR conclusions via an LLM-based AI Agent. In fact, let's attempt a rough version of such a system.
+```bash
+pip install pandas numpy scikit-learn matplotlib seaborn joblib statsmodels scipy tqdm ollama
+ollama pull llama3.2
+```
+
+**Run notebooks in order:**
