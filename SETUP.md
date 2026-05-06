@@ -96,12 +96,12 @@ All notebooks must be run **in order** from the same working directory. Each not
 
 | Notebook | Approximate Runtime |
 |---|---|
-| 01 | 1–2 minutes |
-| 02 | 2–3 minutes |
-| 03 | 10–20 minutes *(RF training is the bottleneck)* |
-| 04 | 20–40 minutes *(depends on Ollama throughput for 300 rows × 2 tasks)* |
+| 01 | <1 minute |
+| 02 | 1-2 minutes |
+| 03 | 5-10 minutes *(RF training is the bottleneck)* |
+| 04 | ~10 minutes *(depends on Ollama throughput for 300 rows × 2 tasks)* |
 | 05 | 1–2 minutes |
-| 06 | 1–3 minutes per agent call |
+| 06 | ~1 minutes per agent call |
 
 ---
 
