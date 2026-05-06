@@ -76,25 +76,4 @@ The Agent Demo (Notebook 6) implements exactly this pattern.
 
 ## Setup
 
-**Requirements:** Python 3.10+, [Ollama](https://ollama.com) running locally with `llama3.2` pulled.
-
-```bash
-pip install pandas numpy scikit-learn matplotlib seaborn joblib statsmodels scipy tqdm ollama
-ollama pull llama3.2
-```
-
-**Run notebooks in order:**
-
-01__Cleaning_and_Feature_Engineering.ipynb
-
-02__Multiple_Linear_Regression.ipynb
-
-03__Random_Forest.ipynb
-
-04__LLM.ipynb
-
-05__Comparison_and_Conclusion.ipynb
-
-06__Agent_Demo.ipynb
-
-Each notebook saves `.pkl` artifacts consumed by the next. All notebooks must be run from the same working directory.
+See [SETUP.md](SETUP.md) for full installation and execution instructions.
