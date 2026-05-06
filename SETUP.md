@@ -38,6 +38,8 @@ pip install -r requirements.txt
 
 ## Step 3: Install and Configure Ollama
 
+Ollama is a free LLM model that runs locally. This model was chosen due to its flexible setup and low operational cost.
+
 Notebooks 4 and 6 require [Ollama](https://ollama.com) running locally with the `llama3.2` model pulled. Without this, both notebooks will throw a connection error.
 
 **Install Ollama:** Download from [https://ollama.com/download](https://ollama.com/download)
