@@ -34,9 +34,8 @@ Note that this dataset originates from Spain, meaning that our attributes will b
 
 ---
 
-======================================================================
 Regression Comparison — Premium Prediction (Log_premium target)
-======================================================================
+
                                  R² (test, log)  RMSE (log)   RMSE (€)  Test n
 Model                                                                         
 Multiple Linear Regression (h2)          0.4869      0.3103   119.1657   20759
@@ -47,9 +46,8 @@ Mean test premium for context: €318.45
 
 ---
 
-======================================================================
   CLASSIFICATION COMPARISON (MLR & RF: balanced models)
-======================================================================
+
                                   ROC-AUC Recall (Claims) Precision F1-Score  Accuracy  Test n Imbalance corrected
 Model                                                                                                             
 Multiple Linear Regression (h2)  0.919000          0.7931     0.584   0.6727    0.8550   20759                 Yes
