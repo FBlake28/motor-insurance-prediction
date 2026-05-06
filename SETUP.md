@@ -28,7 +28,7 @@ cd motor-insurance-prediction
 pip install pandas numpy scikit-learn matplotlib seaborn joblib statsmodels scipy tqdm ollama ipython
 ```
 
-Or if a `requirements.txt` is present:
+Or by using the `requirements.txt` file included:
 
 ```bash
 pip install -r requirements.txt
